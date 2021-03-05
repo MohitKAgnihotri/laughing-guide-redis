@@ -11,6 +11,7 @@
 
 #ifndef SYNOPTIC_H
 #define SYNOPTIC_H
+
 #define PORT			   54321
 #define BACKLOG            10
 

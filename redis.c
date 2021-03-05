@@ -18,8 +18,11 @@ int server_socket_fd;
 hashtable_t *hashtable = NULL;
 
 pthread_mutex_t database_mutex;
+
+#ifdef LOG_FILE_ENABLED
 pthread_mutex_t file_mutex;
 FILE *fpLogFile = NULL;
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -41,6 +44,8 @@ int main(int argc, char *argv[])
 
     /*Initialize the mutex*/
     pthread_mutex_init(&database_mutex, NULL);
+
+#ifdef LOG_FILE_ENABLED
     pthread_mutex_init(&file_mutex, NULL);
 
     /*Setup the log file*/
@@ -51,6 +56,7 @@ int main(int argc, char *argv[])
         printf("Server Exiting\n");
         exit(FAILURE);
     }
+#endif
 
     /*Setup hash table to store the database values*/
     hashtable = ht_create( 65536 );
@@ -200,12 +206,14 @@ int server_process_request(char *readMsg, size_t readlen, char**response, size_t
         }
     }
 
+#ifdef LOG_FILE_ENABLED
     time_t ticks = time(NULL);
     char *statusString = (status == SUCCESS) ? "SUCCESS": (status == ERROR_DUPLICATE_ENTRY) ? "ERROR_DUPLICATE_ENTRY" : (status == ERROR_NO_SUCH_KEY) ? "ERROR_NO_SUCH_KEY" : "FAILURE";
     pthread_mutex_lock(&file_mutex);
     fprintf(fpLogFile, "%.24s\r\n", ctime(&ticks));
     fprintf(fpLogFile,"%s ->%s:%s\n",statusString,key,value);
     pthread_mutex_unlock(&file_mutex);
+#endif
     return status;
 }
 
@@ -248,7 +256,9 @@ void *pthread_routine(void *arg)
 void signal_handler(int signal_number)
 {
     close(server_socket_fd);
+#ifdef LOG_FILE_ENABLED
     fclose(fpLogFile);
+#endif
     ht_free(hashtable);
     exit(0);
 }
