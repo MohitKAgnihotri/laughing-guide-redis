@@ -1,0 +1,16 @@
+# Makefile for string protocol, server, and client
+CC=/usr/bin/clang
+CFLAGS=-Wall -g3 -Werror -Wall -Wpedantic -std=c17
+LDFLAGS=-lpthread
+
+
+default: server
+rebuild: clean default
+build: server
+
+server: hashtable
+	$(CC) $(CFLAGS) -o server redis.c hastable.o $(LDFLAGS)
+hashtable: hastable.c
+	$(CC) $(CFLAGS) -c hastable.c
+clean:
+	@/bin/rm -f server *.o *core *~
