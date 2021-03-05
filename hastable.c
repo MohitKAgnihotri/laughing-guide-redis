@@ -108,3 +108,31 @@ entry_t * ht_get( hashtable_t *hashtable, char *key ) {
         return pair;
     }
 }
+
+
+void ht_free_table_entry(struct entry_s *head)
+{
+    struct entry_s *temp = head;
+    while( head != NULL )
+    {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+void ht_free(hashtable_t *hashtable)
+{
+    if (hashtable)
+    {
+        for (int i = 0; i < hashtable->size; i++)
+        {
+            if (hashtable->table[i] != NULL)
+            {
+                ht_free_table_entry(hashtable->table[i]);
+            }
+        }
+        free(hashtable->table);
+        free(hashtable);
+    }
+}

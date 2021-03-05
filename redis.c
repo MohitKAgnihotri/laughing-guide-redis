@@ -236,7 +236,7 @@ void *pthread_routine(void *arg)
         if (response_len)
         {
             write(client_socket,response,response_len);
-            //free(response);
+            free(response);
             response = NULL;
         }
     }
@@ -249,5 +249,6 @@ void signal_handler(int signal_number)
 {
     close(server_socket_fd);
     fclose(fpLogFile);
+    ht_free(hashtable);
     exit(0);
 }
